@@ -18,7 +18,8 @@ module load ml/torch/2.6
 nodes=( $( scontrol show hostnames $SLURM_JOB_NODELIST ) )
 head_node=${nodes[0]}
 head_node_ip=$(srun --nodes=1 --ntasks=1 -w "$head_node" hostname --ip-address)
-
+echo "Testing connectivity to master node ($head_node_ip) from $(hostname)"
+nc -zv $head_node_ip 29500
 echo "Master node is $head_node with IP $head_node_ip"
 
 export CUDA_VISIBLE_DEVICES=0
@@ -28,9 +29,6 @@ export CUDA_VISIBLE_DEVICES=0
 srun torchrun \
     --nnodes=2 \
     --nproc_per_node=1 \
-    --rdzv_id=$SLURM_JOB_ID \
-    --rdzv_backend=c10d \
+    --rdzv_backend=static \
     --rdzv_endpoint=$head_node_ip:29500 \
-    --master_addr=$head_node_ip \
-    --master_port=29500 \
     train.py
