@@ -31,4 +31,6 @@ srun torchrun \
     --rdzv_id=$SLURM_JOB_ID \
     --rdzv_backend=c10d \
     --rdzv_endpoint=$head_node_ip:29500 \
+    --master_addr=$head_node_ip \
+    --master_port=29500 \
     train.py
