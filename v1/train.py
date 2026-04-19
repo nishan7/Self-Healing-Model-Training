@@ -7,13 +7,10 @@ import torch
 import torch.distributed as dist
 from torch.nn.parallel import DistributedDataParallel as DDP
 
-
-CKPT_PATH = Path("./elastic_ckpt.pt")
+CKPT_PATH = Path("/fs/atipa/home/018280561/Self-Healing-Model-Training/v1/elastic_ckpt.pt")
 TOTAL_STEPS = 100000
 
-
 def setup():
-    # Optional network workaround for clusters with flaky IB
     os.environ.setdefault("NCCL_IB_DISABLE", "1")
     os.environ.setdefault("NCCL_SOCKET_IFNAME", "^lo,docker0")
     os.environ.setdefault("GLOO_SOCKET_IFNAME", "^lo,docker0")
@@ -26,28 +23,25 @@ def setup():
 
     torch.cuda.set_device(local_rank)
     device = torch.device(f"cuda:{local_rank}")
-
     return local_rank, rank, world_size, device
-
 
 def cleanup():
     if dist.is_available() and dist.is_initialized():
         try:
-            dist.barrier()
+            dist.destroy_process_group()
         except Exception:
             pass
-        dist.destroy_process_group()
-
 
 def save_ckpt(rank, model, optimizer, step):
     if rank == 0:
-        tmp = {
-            "model": model.module.state_dict(),
-            "optim": optimizer.state_dict(),
-            "step": step,
-        }
-        torch.save(tmp, CKPT_PATH)
-
+        torch.save(
+            {
+                "model": model.module.state_dict(),
+                "optim": optimizer.state_dict(),
+                "step": step,
+            },
+            CKPT_PATH,
+        )
 
 def load_ckpt(device, model, optimizer):
     if CKPT_PATH.exists():
@@ -56,7 +50,6 @@ def load_ckpt(device, model, optimizer):
         optimizer.load_state_dict(state["optim"])
         return int(state["step"]) + 1
     return 0
-
 
 def main():
     local_rank, rank, world_size, device = setup()
@@ -68,13 +61,11 @@ def main():
     optimizer = torch.optim.SGD(model.parameters(), lr=1e-3)
     criterion = torch.nn.MSELoss()
 
-    start_step = 0
-
     try:
         start_step = load_ckpt(device, model, optimizer)
 
         if rank == 0:
-            print(f"[INFO] started world_size={world_size} start_step={start_step}")
+            print(f"[INFO] started world_size={world_size} start_step={start_step}", flush=True)
 
         for step in range(start_step, TOTAL_STEPS):
             x = torch.randn(32, 10, device=device)
@@ -92,21 +83,14 @@ def main():
                 flush=True,
             )
 
-            # checkpoint every few steps
             if step % 5 == 0:
-                dist.barrier()
+                # only rank 0 writes
                 save_ckpt(rank, model, optimizer, step)
-                dist.barrier()
 
-            # slow down so you can kill a node and watch recovery
             time.sleep(2)
 
-    except KeyboardInterrupt:
-        print(f"node={hostname} rank={rank} interrupted", flush=True)
-        raise
     finally:
         cleanup()
-
 
 if __name__ == "__main__":
     main()
