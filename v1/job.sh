@@ -27,7 +27,7 @@ export CUDA_VISIBLE_DEVICES=0
 # Launch the distributed job
 # In your job.sh, update the srun command to match the GRES
 srun torchrun \
-    --nnodes=2 \
+    --nnodes=1 \
     --nproc_per_node=1 \
     --rdzv_backend=static \
     --rdzv_endpoint=$head_node_ip:29500 \
