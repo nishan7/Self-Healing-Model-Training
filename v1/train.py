@@ -25,6 +25,7 @@ class DummyModel(nn.Module):
 
 def main():
     local_rank = setup()
+    rank = int(os.environ["RANK"]) # Global rank across all nodes
     
     # Initialize model and move it to the correct GPU
     model = DummyModel().cuda(local_rank)
@@ -34,6 +35,9 @@ def main():
     checkpoint_path = "dummy_checkpoint.pt"
     start_epoch = 0
 
+    # Wait for all nodes to be ready before checking files
+    dist.barrier()
+
     # --- CHECKPOINT LOADING LOGIC ---
     if os.path.exists(checkpoint_path):
         chkpt = torch.load(checkpoint_path, map_location="cpu", weights_only=True)
@@ -42,10 +46,10 @@ def main():
         # Resume from the epoch *after* the last saved one
         start_epoch = chkpt['epoch'] + 1 
         
-        if int(os.environ["RANK"]) == 0:
+        if rank == 0:
             print(f"\n[INFO] Checkpoint found! --- RESUMING FROM EPOCH {start_epoch} ---\n")
     else:
-        if int(os.environ["RANK"]) == 0:
+        if rank == 0:
             print("\n[INFO] No checkpoint found. Starting fresh.\n")
 
     # --- TRAINING LOOP ---
@@ -61,14 +65,21 @@ def main():
         optimizer.step()
 
         # --- CHECKPOINT SAVING LOGIC ---
-        # Only save on the master node to prevent file corruption
-        if int(os.environ["RANK"]) == 0:
+        if rank == 0:
             print(f"Completed Epoch {epoch}/100. Saving checkpoint...")
+            
+            # ATOMIC SAVE: Save to a temp file first, then rename.
+            # This prevents a corrupted checkpoint if SLURM kills the job mid-save.
+            temp_path = f"{checkpoint_path}.tmp"
             torch.save({
                 'epoch': epoch,
                 'model_state_dict': model.module.state_dict(),
                 'optimizer': optimizer.state_dict(),
-            }, checkpoint_path)
+            }, temp_path)
+            os.replace(temp_path, checkpoint_path)
+        
+        # Ensure all nodes wait until Node 0 finishes saving
+        dist.barrier()
         
         # ARTIFICIAL DELAY: Pauses for 5 seconds so you have time to interrupt it!
         time.sleep(5) 
