@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-WORKDIR="/fs/atipa/home/018280561/Self-Healing-Model-Training/v2"
+WORKDIR="/home/018280561/Self-Healing-Model-Training/v2"
 RDZV_ID="${1:-job1}"
 RDZV_ENDPOINT="172.16.1.77:29500"
 LOGFILE="${2:-torchrun_${RDZV_ID}.log}"
