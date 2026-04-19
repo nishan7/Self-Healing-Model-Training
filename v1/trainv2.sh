@@ -5,6 +5,9 @@ export NCCL_SOCKET_IFNAME=^lo,docker0
 export GLOO_SOCKET_IFNAME=^lo,docker0
 
 
+module load python3
+module load ml/torch/2.6
+
 torchrun \
     --nnodes=1:2 \
     --nproc_per_node=1 \

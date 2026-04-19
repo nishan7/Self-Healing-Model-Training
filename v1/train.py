@@ -43,8 +43,9 @@ def main():
     if global_rank == 0:
         print(f"\n--- Cluster ready with {world_size} GPUs! ---")
 
+
     # 3. Verbose Training Loop
-    for epoch in range(100000):
+    for epoch in range(100):
         sampler.set_epoch(epoch)
         
         dist.barrier()
