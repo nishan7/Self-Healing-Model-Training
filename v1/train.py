@@ -44,7 +44,7 @@ def main():
         print(f"\n--- Cluster ready with {world_size} GPUs! ---")
 
     # 3. Verbose Training Loop
-    for epoch in range(2):
+    for epoch in range(100000):
         sampler.set_epoch(epoch)
         
         dist.barrier()
@@ -61,7 +61,7 @@ def main():
             # THE REVEAL: Every GPU prints its location and its data chunk!
             print(f"[Node: {hostname} | GPU Rank: {global_rank}] Step {step} | Data IDs: {indices.tolist()}")
             
-            time.sleep(1) # Pause for 1 second so you can watch it flow
+            time.sleep(2) # Pause for 1 second so you can watch it flow
 
     dist.destroy_process_group()
 
