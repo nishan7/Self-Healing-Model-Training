@@ -1,0 +1,5 @@
+export NCCL_DEBUG=INFO
+export GLOO_DISABLE_IPV6=1
+export NCCL_DISABLE_IPV6=1
+export NCCL_SOCKET_IFNAME=^lo,docker0
+export GLOO_SOCKET_IFNAME=^lo,docker0
