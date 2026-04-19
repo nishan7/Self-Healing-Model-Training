@@ -15,4 +15,4 @@ salloc --nodes=2 --partition=gpuqs --gres=gpu:a100:1 --cpus-per-task=2 --time=01
 hostname --ip-address
 
 
-srun --jobid=32693 --nodelist=cs004 --pty bash
+srun --jobid=32697 --nodelist=cs004 --pty bash
