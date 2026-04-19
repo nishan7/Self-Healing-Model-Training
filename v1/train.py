@@ -44,7 +44,7 @@ def main():
             f"samples/rank/epoch={sampler.num_samples}"
         )
 
-    for epoch in range(100):
+    for epoch in range(5):
         sampler.set_epoch(epoch)
         if global_rank == 0:
             print(f"epoch {epoch}")
