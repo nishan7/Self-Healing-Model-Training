@@ -9,7 +9,7 @@ from torch.nn.parallel import DistributedDataParallel as DDP
 
 
 # Use a SHARED filesystem path visible from both nodes
-CKPT_PATH = Path("/fs/atipa/home/018280561/Self-Healing-Model-Training/v1/elastic_ckpt.pt")
+CKPT_PATH = Path("/home/018280561/Self-Healing-Model-Training/v1/elastic_ckpt.pt")
 
 TOTAL_STEPS = 100000
 CKPT_EVERY = 5
