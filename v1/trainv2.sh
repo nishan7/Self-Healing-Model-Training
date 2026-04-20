@@ -14,5 +14,6 @@ torchrun \
     --max_restarts=20 \
     --rdzv_id=my_elastic_job \
     --rdzv_backend=c10d \
-    --rdzv_endpoint=172.16.1.77:29500 \
+    --rdzv_endpoint=172.16.1.76:29500 \
+    --rdzv-conf join_timeout=900,last_call_timeout=60,close_timeout=60,read_timeout=900 \
     train.py
