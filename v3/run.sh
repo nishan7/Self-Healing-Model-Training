@@ -2,7 +2,7 @@
 #SBATCH --job-name=ddp-ckpt
 #SBATCH --nodes=2
 #SBATCH --ntasks-per-node=1
-#SBATCH --partition=gpuqs
+#SBATCH --partition=gpuqs,gpuqm,gpuql
 #SBATCH --time=02:00:00
 #SBATCH --output=logs/%x-%j.out
 #SBATCH --error=logs/%x-%j.err
