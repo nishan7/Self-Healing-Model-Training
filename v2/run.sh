@@ -7,7 +7,7 @@ module load ml/torch/2.6
 
 WORKDIR="/home/018280561/Self-Healing-Model-Training/v2"
 RDZV_ID="${1:-job1}"
-RDZV_ENDPOINT="172.16.1.77:29500"
+RDZV_ENDPOINT="172.16.1.75:29500"
 LOGFILE="${2:-torchrun_${RDZV_ID}.log}"
 
 cd "$WORKDIR"
