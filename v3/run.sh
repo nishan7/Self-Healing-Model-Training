@@ -17,6 +17,9 @@ mkdir -p logs
 MASTER_ADDR=$(scontrol show hostnames "$SLURM_JOB_NODELIST" | head -n 1)
 MASTER_PORT=29500
 
+module load python3
+module load ml/torch/2.6
+
 export MASTER_ADDR
 export MASTER_PORT
 export NCCL_IB_DISABLE=1
