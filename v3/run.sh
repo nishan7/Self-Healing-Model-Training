@@ -2,8 +2,7 @@
 #SBATCH --job-name=ddp-ckpt
 #SBATCH --nodes=2
 #SBATCH --ntasks-per-node=1
-#SBATCH --gres=gpu:4
-#SBATCH --cpus-per-task=8
+#SBATCH --partition=gpuqs
 #SBATCH --time=02:00:00
 #SBATCH --output=logs/%x-%j.out
 #SBATCH --error=logs/%x-%j.err
