@@ -10,9 +10,11 @@ rsync -avz ./v1 018280561@coe-hpc1.sjsu.edu:~/
 <!-- rsync -avz scripts g17:~/scripts -->
 
 
-salloc --nodes=3 --partition=gpuqs --gres=gpu:a100:1 --cpus-per-task=2 --time=01:00:00 --exclude=cs001
+salloc --nodes=3 --partition=gpuqs --cpus-per-task=1 --time=01:00:00 --exclude=cs001,cs003
 
 hostname --ip-address
 
 
-srun --jobid=32843 --nodelist=cs002 --pty bash
+srun --jobid=32953 --nodelist=g11 --pty bash
+
+pkill -9 -f "python -u train.py"; pkill -9 -f "torchrun.*train.py"
