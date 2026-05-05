@@ -1,0 +1,18 @@
+============================================
+ LENS POC — Job 28812
+ Nodes : g[2-4]
+ Output: /home/018291533/lens_poc/results/28812
+============================================
+[Tue Mar 31 04:43:40 PM PDT 2026] Starting telemetry pollers on all nodes...
+[Tue Mar 31 04:43:45 PM PDT 2026] Launching DDP workload...
+[Tue Mar 31 04:43:45 PM PDT 2026] Both processes running. Waiting...
+[Tue Mar 31 04:43:45 PM PDT 2026] DDP workload finished.
+[Tue Mar 31 04:43:45 PM PDT 2026] Pollers stopped.
+
+============================================
+ POC complete. Results in: /home/018291533/lens_poc/results/28812
+ CSV files:
+/home/018291533/lens_poc/results/28812/telemetry_g2.hpc.coe_28812.csv
+/home/018291533/lens_poc/results/28812/telemetry_g3.hpc.coe_28812.csv
+/home/018291533/lens_poc/results/28812/telemetry_g4.hpc.coe_28812.csv
+============================================

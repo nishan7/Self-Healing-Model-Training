@@ -1,0 +1,6 @@
+srun: error: Unable to create step for job 28812: Memory required by task is not available
+srun: forcing job termination
+srun: Job step aborted: Waiting up to 32 seconds for job step to finish.
+srun: error: g3: task 1: Killed
+srun: error: g4: task 2: Killed
+srun: error: g2: task 0: Killed

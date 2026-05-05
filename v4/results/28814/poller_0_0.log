@@ -1,0 +1,4 @@
+[INFO] Writing telemetry to /home/018291533/lens_poc/results/28814/telemetry_g4.hpc.coe_28814.csv
+[INFO] Poller started on g4.hpc.coe | IB=mlx4_0:1 | interval=0.5s
+slurmstepd-g4: error: *** STEP 28814.0 ON g4 CANCELLED AT 2026-03-31T17:02:55 ***
+[INFO] Poller stopped on g4.hpc.coe. Rows written to CSV.

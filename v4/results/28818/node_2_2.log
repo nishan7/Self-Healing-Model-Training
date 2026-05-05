@@ -1,0 +1,7 @@
+[g11.hpc.coe] Poller started with PID 107750
+[INFO] Writing telemetry to /home/018291533/lens_poc/results/28818/telemetry_g11.hpc.coe_28818.csv
+[INFO] Poller started on g11.hpc.coe | IB=mlx4_0:1 | interval=0.5s
+[rank 2/3] Initializing DDP on g4:29500
+[rank 2] Using device: cuda:0
+[rank 2] Starting training loop (batch=16, epochs=999)
+[g11.hpc.coe] Done.

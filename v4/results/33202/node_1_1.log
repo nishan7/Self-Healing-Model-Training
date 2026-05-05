@@ -1,0 +1,6 @@
+[g10.hpc.coe] Poller started with PID 2612502
+python3: can't open file '/home/018291533/lens_poc/telemetry_poller.py': [Errno 2] No such file or directory
+[rank 1/3] Initializing DDP on g8:29500
+[rank 1] Using device: cuda:0
+[rank 1] Starting training loop (batch=16, epochs=999)
+[g10.hpc.coe] Done.

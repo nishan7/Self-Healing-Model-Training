@@ -1,0 +1,16 @@
+============================================
+ LENS POC — Job 33203
+ Nodes : g[8,10-11]
+ Master: g8
+ Output: /home/018291533/lens_poc/results/33203
+============================================
+[Mon Apr 20 04:26:33 PM PDT 2026] Launching poller + DDP on all nodes...
+[Mon Apr 20 04:28:14 PM PDT 2026] All nodes finished.
+
+============================================
+ POC complete. Results in: /home/018291533/lens_poc/results/33203
+ CSV files:
+/home/018291533/lens_poc/results/33203/telemetry_g10.hpc.coe_33203.csv
+/home/018291533/lens_poc/results/33203/telemetry_g11.hpc.coe_33203.csv
+/home/018291533/lens_poc/results/33203/telemetry_g8.hpc.coe_33203.csv
+============================================

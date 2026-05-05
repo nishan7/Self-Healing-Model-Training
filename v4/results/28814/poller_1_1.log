@@ -1,0 +1,3 @@
+[INFO] Writing telemetry to /home/018291533/lens_poc/results/28814/telemetry_g7.hpc.coe_28814.csv
+[INFO] Poller started on g7.hpc.coe | IB=mlx4_0:1 | interval=0.5s
+[INFO] Poller stopped on g7.hpc.coe. Rows written to CSV.

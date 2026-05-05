@@ -1,0 +1,3 @@
+[WARN] No InfiniBand device found. IB counters will be null.
+[INFO] Writing telemetry to /home/018291533/lens_poc/results/28812/telemetry_g3.hpc.coe_28812.csv
+[INFO] Poller started on g3.hpc.coe | IB=None:1 | interval=0.5s
