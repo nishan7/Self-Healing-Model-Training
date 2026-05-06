@@ -17,10 +17,14 @@ CKPT_EVERY = 5
 terminate_requested = False
 
 
+def log_event(log_type, subtype, message):
+    print(f"[{log_type}][{subtype}] {message}", flush=True)
+
+
 def handle_sigterm(signum, frame):
     global terminate_requested
     terminate_requested = True
-    print("[signal] SIGTERM received. Will checkpoint and exit.", flush=True)
+    log_event("system", "signal", "SIGTERM received. Will checkpoint and exit.")
 
 
 def setup():
@@ -29,14 +33,15 @@ def setup():
     os.environ.setdefault("NCCL_IB_DISABLE", "1")
 
     hostname = socket.gethostname()
-    print(
-        f"[pre-init] node={hostname} pid={os.getpid()} "
+    log_event(
+        "system",
+        "pre_init",
+        f"node={hostname} pid={os.getpid()} "
         f"MASTER_ADDR={os.environ.get('MASTER_ADDR', 'na')} "
         f"MASTER_PORT={os.environ.get('MASTER_PORT', 'na')} "
         f"RANK={os.environ.get('RANK', 'na')} "
         f"LOCAL_RANK={os.environ.get('LOCAL_RANK', 'na')} "
         f"WORLD_SIZE={os.environ.get('WORLD_SIZE', 'na')}",
-        flush=True,
     )
 
     dist.init_process_group(backend="nccl", timeout=timedelta(minutes=3))
@@ -57,10 +62,11 @@ def setup():
     torch.cuda.set_device(local_rank)
     device = torch.device(f"cuda:{local_rank}")
 
-    print(
-        f"[post-init] node={hostname} rank={rank} local_rank={local_rank} "
+    log_event(
+        "system",
+        "post_init",
+        f"node={hostname} rank={rank} local_rank={local_rank} "
         f"world_size={world_size} cuda_devices={num_gpus}",
-        flush=True,
     )
 
     return local_rank, rank, world_size, device
@@ -84,7 +90,7 @@ def save_ckpt(rank, model, optimizer, step):
         }
         torch.save(payload, tmp_path)
         os.replace(tmp_path, CKPT_PATH)
-        print(f"[checkpoint] saved step={step} path={CKPT_PATH}", flush=True)
+        log_event("training", "checkpoint", f"saved step={step} path={CKPT_PATH}")
 
 
 def load_ckpt(model, optimizer):
@@ -93,7 +99,7 @@ def load_ckpt(model, optimizer):
         model.module.load_state_dict(state["model"])
         optimizer.load_state_dict(state["optim"])
         start_step = int(state["step"]) + 1
-        print(f"[checkpoint] loaded start_step={start_step} path={CKPT_PATH}", flush=True)
+        log_event("training", "checkpoint", f"loaded start_step={start_step} path={CKPT_PATH}")
         return start_step
     return 0
 
@@ -113,12 +119,13 @@ def main():
         start_step = load_ckpt(model, optimizer)
         dist.barrier()
 
-        print(
-            f"[startup] node={hostname} rank={rank} local_rank={local_rank} "
+        log_event(
+            "system",
+            "startup",
+            f"node={hostname} rank={rank} local_rank={local_rank} "
             f"world_size={world_size} start_step={start_step} "
             f"restart_count={os.environ.get('SLURM_RESTART_COUNT', '0')} "
             f"job_id={os.environ.get('SLURM_JOB_ID', 'na')}",
-            flush=True,
         )
 
         for step in range(start_step, TOTAL_STEPS):
@@ -131,9 +138,10 @@ def main():
             loss.backward()
             optimizer.step()
 
-            print(
-                f"[train] node={hostname} rank={rank} step={step} loss={loss.item():.4f}",
-                flush=True,
+            log_event(
+                "training",
+                "training_step",
+                f"node={hostname} rank={rank} step={step} loss={loss.item():.4f}",
             )
 
             if step % CKPT_EVERY == 0 or terminate_requested:
@@ -142,7 +150,7 @@ def main():
                 dist.barrier()
 
             if terminate_requested:
-                print(f"[exit] rank={rank} clean exit after checkpoint", flush=True)
+                log_event("training", "exit", f"rank={rank} clean exit after checkpoint")
                 break
 
             time.sleep(2)

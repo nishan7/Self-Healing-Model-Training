@@ -12,6 +12,21 @@
 
 set -euo pipefail
 
+_shutdown_logged=0
+log_slrum_op() {
+  local op_type="$1"
+  echo "[slrum][operation] type=${op_type}"
+}
+on_exit() {
+  if [[ "${_shutdown_logged}" -eq 0 ]]; then
+    _shutdown_logged=1
+    log_slrum_op "shuttng_down"
+  fi
+}
+trap on_exit EXIT TERM INT
+
+log_slrum_op "starting"
+
 cd /home/018280561/Self-Healing-Model-Training/v3
 mkdir -p logs
 
