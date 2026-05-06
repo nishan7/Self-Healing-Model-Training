@@ -26,6 +26,8 @@ export MASTER_PORT
 export NCCL_IB_DISABLE=1
 export NCCL_SOCKET_IFNAME=^lo,docker0
 export GLOO_SOCKET_IFNAME=^lo,docker0
+export NCCL_DEBUG=INFO
+export TORCH_DISTRIBUTED_DEBUG=DETAIL
 
 echo "===== SLURM STARTUP ====="
 echo "JOB_ID=$SLURM_JOB_ID"
@@ -37,7 +39,12 @@ echo "NPROC_PER_NODE=1"
 echo "START_TIME=$(date)"
 echo "========================="
 
-srun --nodes=$SLURM_NNODES --ntasks=$SLURM_NNODES --ntasks-per-node=1 \
+echo "===== NODE PREFLIGHT ====="
+srun --label --nodes=$SLURM_NNODES --ntasks=$SLURM_NNODES --ntasks-per-node=1 \
+  bash -lc 'echo "host=$(hostname) CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES:-unset}"; nvidia-smi -L || true'
+echo "=========================="
+
+srun --label --nodes=$SLURM_NNODES --ntasks=$SLURM_NNODES --ntasks-per-node=1 \
   torchrun \
     --nnodes=$SLURM_NNODES \
     --nproc-per-node=1 \

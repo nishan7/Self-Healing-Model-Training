@@ -3,6 +3,7 @@ import time
 import socket
 import signal
 from pathlib import Path
+from datetime import timedelta
 
 import torch
 import torch.distributed as dist
@@ -29,14 +30,40 @@ def setup():
     os.environ.setdefault("NCCL_SOCKET_IFNAME", "^lo,docker0")
     os.environ.setdefault("GLOO_SOCKET_IFNAME", "^lo,docker0")
 
-    dist.init_process_group(backend="nccl")
+    hostname = socket.gethostname()
+    print(
+        f"[pre-init] node={hostname} pid={os.getpid()} "
+        f"MASTER_ADDR={os.environ.get('MASTER_ADDR', 'na')} "
+        f"MASTER_PORT={os.environ.get('MASTER_PORT', 'na')} "
+        f"RANK={os.environ.get('RANK', 'na')} "
+        f"LOCAL_RANK={os.environ.get('LOCAL_RANK', 'na')} "
+        f"WORLD_SIZE={os.environ.get('WORLD_SIZE', 'na')}",
+        flush=True,
+    )
+
+    dist.init_process_group(backend="nccl", timeout=timedelta(minutes=3))
 
     local_rank = int(os.environ["LOCAL_RANK"])
     rank = int(os.environ["RANK"])
     world_size = int(os.environ["WORLD_SIZE"])
 
+    num_gpus = torch.cuda.device_count()
+    if num_gpus == 0:
+        raise RuntimeError("No CUDA device is visible to this process.")
+    if local_rank >= num_gpus:
+        raise RuntimeError(
+            f"LOCAL_RANK={local_rank} but only {num_gpus} CUDA device(s) visible. "
+            "Set torchrun --nproc-per-node <= GPUs per node, or request more GPUs in Slurm."
+        )
+
     torch.cuda.set_device(local_rank)
     device = torch.device(f"cuda:{local_rank}")
+
+    print(
+        f"[post-init] node={hostname} rank={rank} local_rank={local_rank} "
+        f"world_size={world_size} cuda_devices={num_gpus}",
+        flush=True,
+    )
 
     return local_rank, rank, world_size, device
 

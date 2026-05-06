@@ -5,7 +5,7 @@
 ACTIVATE="/fs/atipa/app/rl9.x/python3/3.11.7/bin/activate"
 source $ACTIVATE
 
-POC_DIR="$HOME/lens_poc"
+POC_DIR="$HOME/v4"
 OUTPUT_DIR="$1"
 MASTER_ADDR="$2"
 MASTER_PORT="$3"
