@@ -4,11 +4,11 @@ set -e
 cd "$(dirname "$0")"
 
 module load python3
-
-python -m pip install --user -U uv
+PORT=8000
+python3 -m pip install --user -U uv
 export PATH="$HOME/.local/bin:$PATH"
 
-pip install -r requirements.txt
+python3 -m uv pip install -r requirements.txt
 
 ngrok http "$PORT" &
 
