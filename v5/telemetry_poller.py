@@ -37,6 +37,14 @@ def _handle_signal(signum, frame):
     global _shutdown
     _shutdown = True
 
+
+def log_info(msg: str):
+    print(f"[telemetry][info] {msg}", file=sys.stderr, flush=True)
+
+
+def log_warn(msg: str):
+    print(f"[telemetry][warn] {msg}", file=sys.stderr, flush=True)
+
 signal.signal(signal.SIGTERM, _handle_signal)
 signal.signal(signal.SIGINT,  _handle_signal)
 
@@ -118,7 +126,7 @@ def poll_gpu():
         out = subprocess.check_output(cmd, timeout=5, text=True)
     except (FileNotFoundError, subprocess.CalledProcessError,
             subprocess.TimeoutExpired) as e:
-        print(f"[WARN] nvidia-smi failed: {e}", file=sys.stderr)
+        log_warn(f"nvidia-smi failed: {e}")
         return []
 
     results = []
@@ -195,8 +203,7 @@ def check_counter_overflow(current, previous, counter_name, bits=32):
         return current - previous
     else:
         # Overflow occurred
-        print(f"[WARN] Counter overflow detected on {counter_name}: "
-              f"{previous} -> {current}", file=sys.stderr)
+        log_warn(f"Counter overflow detected on {counter_name}: {previous} -> {current}")
         return (max_val - previous) + current
 
 
@@ -235,7 +242,7 @@ def open_csv(output_dir: str, node_id: str, job_id: str):
     f = open(fname, "w", newline="")
     writer = csv.DictWriter(f, fieldnames=FIELDNAMES, extrasaction='ignore')
     writer.writeheader()
-    print(f"[INFO] Writing telemetry to {fname}", file=sys.stderr)
+    log_info(f"Writing telemetry to {fname}")
     return f, writer
 
 
@@ -250,12 +257,10 @@ def run_poller(args):
     if not Path(f"/sys/class/infiniband/{ib_device}").exists():
         detected = detect_ib_device()
         if detected:
-            print(f"[WARN] {ib_device} not found; using {detected}",
-                  file=sys.stderr)
+            log_warn(f"{ib_device} not found; using {detected}")
             ib_device = detected
         else:
-            print("[WARN] No InfiniBand device found. IB counters will be null.",
-                  file=sys.stderr)
+            log_warn("No InfiniBand device found. IB counters will be null.")
             ib_device = None
 
     # Log which hw_counters are actually available
@@ -263,11 +268,9 @@ def run_poller(args):
         hw_path = Path(f"/sys/class/infiniband/{ib_device}/ports/{args.ib_port}/hw_counters")
         if hw_path.exists():
             available_hw = [p.name for p in hw_path.iterdir()]
-            print(f"[INFO] hw_counters available: {sorted(available_hw)}",
-                  file=sys.stderr)
+            log_info(f"hw_counters available: {sorted(available_hw)}")
         else:
-            print("[WARN] hw_counters directory not found — RDMA counters will be null",
-                  file=sys.stderr)
+            log_warn("hw_counters directory not found - RDMA counters will be null")
 
     f, writer = open_csv(args.output_dir, node_id, job_id)
 
@@ -276,12 +279,11 @@ def run_poller(args):
     start_time = time.monotonic()
     deadline   = start_time + args.duration
 
-    print(
-        f"[INFO] Poller v2 started on {node_id} | "
+    log_info(
+        f"Poller started on {node_id} | "
         f"IB={ib_device}:{args.ib_port} | "
         f"interval={args.interval}s | "
-        f"counters={len(ALL_IB_COUNTERS)} IB + {len(IB_HW_COUNTERS)} HW",
-        file=sys.stderr
+        f"counters={len(ALL_IB_COUNTERS)} IB + {len(IB_HW_COUNTERS)} HW"
     )
 
     try:
@@ -354,7 +356,7 @@ def run_poller(args):
 
     finally:
         f.close()
-        print(f"[INFO] Poller stopped on {node_id}.", file=sys.stderr)
+        log_info(f"Poller stopped on {node_id}.")
 
 
 # ── Entry point ──────────────────────────────────────────────────────────────

@@ -1,1 +1,21 @@
 logserver/env
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.ipynb_checkpoints/
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+
+# OS / editor
+.DS_Store
+.vscode/
