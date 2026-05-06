@@ -3,7 +3,7 @@ set -e
 
 cd "$(dirname "$0")"
 
-module load python
+module load python3
 
 python -m pip install --user -U uv
 export PATH="$HOME/.local/bin:$PATH"
