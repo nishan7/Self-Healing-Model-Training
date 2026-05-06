@@ -27,8 +27,6 @@ def setup():
     signal.signal(signal.SIGTERM, handle_sigterm)
 
     os.environ.setdefault("NCCL_IB_DISABLE", "1")
-    os.environ.setdefault("NCCL_SOCKET_IFNAME", "^lo,docker0")
-    os.environ.setdefault("GLOO_SOCKET_IFNAME", "^lo,docker0")
 
     hostname = socket.gethostname()
     print(

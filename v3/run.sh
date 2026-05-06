@@ -24,10 +24,14 @@ module load ml/torch/2.6
 export MASTER_ADDR
 export MASTER_PORT
 export NCCL_IB_DISABLE=1
-export NCCL_SOCKET_IFNAME=^lo,docker0
-export GLOO_SOCKET_IFNAME=^lo,docker0
 export NCCL_DEBUG=INFO
 export TORCH_DISTRIBUTED_DEBUG=DETAIL
+
+IFACE=$(ip -o -4 route show to default | awk '{print $5}' | head -n1)
+if [[ -n "${IFACE}" ]]; then
+  export NCCL_SOCKET_IFNAME="$IFACE"
+  export GLOO_SOCKET_IFNAME="$IFACE"
+fi
 
 echo "===== SLURM STARTUP ====="
 echo "JOB_ID=$SLURM_JOB_ID"
@@ -35,6 +39,7 @@ echo "RESTART_COUNT=${SLURM_RESTART_COUNT:-0}"
 echo "NODELIST=$SLURM_JOB_NODELIST"
 echo "MASTER_ADDR=$MASTER_ADDR"
 echo "MASTER_PORT=$MASTER_PORT"
+echo "SOCKET_IFACE=${IFACE:-unset}"
 echo "NPROC_PER_NODE=1"
 echo "START_TIME=$(date)"
 echo "========================="
