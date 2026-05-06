@@ -3,6 +3,7 @@ set -e
 cd "$(dirname "$0")"
 module load python3
 PORT=8000
+
 python3 -m pip install --user -U uv
 export PATH="$HOME/.local/bin:$PATH"
 
