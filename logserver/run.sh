@@ -2,7 +2,7 @@
 set -e
 cd "$(dirname "$0")"
 module load python3
-PORT=8000
+PORT=8002
 
 # Always install deps into a writable local venv (HPC nodes won't allow /usr writes)
 if [[ ! -d ".venv" ]]; then
