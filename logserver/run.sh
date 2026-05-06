@@ -16,5 +16,4 @@ python3 -m pip install -U pip
 python3 -m pip install -U uv
 uv pip install -r requirements.txt
 
-ngrok http "$PORT" &
 HOST=0.0.0.0 PORT="$PORT" python3 server.py
