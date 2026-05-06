@@ -10,6 +10,10 @@ RDZV_ID="${1:-job1}"
 RDZV_ENDPOINT="172.16.1.76:29500"
 LOGFILE="${2:-torchrun_${RDZV_ID}.log}"
 
+export NCCL_DEBUG=INFO
+export TORCH_DISTRIBUTED_DEBUG=DETAIL
+
+
 cd "$WORKDIR"
 
 nohup bash -lc "
