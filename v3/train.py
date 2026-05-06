@@ -8,7 +8,7 @@ import torch
 import torch.distributed as dist
 from torch.nn.parallel import DistributedDataParallel as DDP
 
-CKPT_PATH = Path("/home/018280561/Self-Healing-Model-Training/v1/elastic_ckpt.pt")
+CKPT_PATH = Path(__file__).resolve().parent / "elastic_ckpt.pt"
 
 TOTAL_STEPS = 100000
 CKPT_EVERY = 5

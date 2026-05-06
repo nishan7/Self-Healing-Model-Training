@@ -2,6 +2,7 @@
 #SBATCH --job-name=ddp-ckpt
 #SBATCH --nodes=2
 #SBATCH --ntasks-per-node=1
+#SBATCH --gres=gpu:1
 #SBATCH --partition=gpuqs,gpuqm,gpuql
 #SBATCH --time=02:00:00
 #SBATCH --output=logs/%x-%j.out
@@ -11,7 +12,7 @@
 
 set -euo pipefail
 
-cd /home/018280561/Self-Healing-Model-Training/v1
+cd /home/018280561/Self-Healing-Model-Training/v3
 mkdir -p logs
 
 MASTER_ADDR=$(scontrol show hostnames "$SLURM_JOB_NODELIST" | head -n 1)
@@ -32,13 +33,14 @@ echo "RESTART_COUNT=${SLURM_RESTART_COUNT:-0}"
 echo "NODELIST=$SLURM_JOB_NODELIST"
 echo "MASTER_ADDR=$MASTER_ADDR"
 echo "MASTER_PORT=$MASTER_PORT"
+echo "NPROC_PER_NODE=1"
 echo "START_TIME=$(date)"
 echo "========================="
 
 srun --nodes=$SLURM_NNODES --ntasks=$SLURM_NNODES --ntasks-per-node=1 \
   torchrun \
     --nnodes=$SLURM_NNODES \
-    --nproc-per-node=4 \
+    --nproc-per-node=1 \
     --rdzv-id=$SLURM_JOB_ID \
     --rdzv-backend=c10d \
     --rdzv-endpoint=${MASTER_ADDR}:${MASTER_PORT} \
